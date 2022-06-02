@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/vue@3"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Book Store</title>
+  </head>
+  <body>
+    <div id="app">
+      <nav class="navbar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link mr-5" href="#" @click="isBooksVisible=true"
+              >Books</a
+            >
+          </li>
+          <li>
+            <div style="color: white">
+              <span>{{favourites.length}} </span
+              ><span v-if="favourites.length !=1"> books</span
+              ><span v-if="favourites.length ==1"> book</span
+              ><span class="me-2"> in your favourites list</span>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link ml-5" href="#" @click="isBooksVisible=false"
+              >Favourites</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <div class="container">
+        <div
+          class="row justify-content-center mt-3"
+          v-if="isBooksVisible==true"
+        >
+          <div
+            v-for="book in books"
+            class="card"
+            style="width: 23rem; margin: 0.3em"
+          >
+            <img class="card-img-top" :src="book.image" :title="book.author" />
+            <div class="card-body">
+              <p class="card-title">{{book.category}}</p>
+              <p class="card-title">{{book.author}}</p>
+              <p :class=" [ book.pages>=50? 'more':'less']">
+                #Pages : {{book.pages}}
+              </p>
+              <p class="card-title">
+                Price : {{currencyFormatter(book.price)}}
+              </p>
+              <p class="card-title">ISBN : {{book.ISBN}}</p>
+              <button
+                class="btn"
+                v-if="!checkexistence(book)"
+                @click="addBook(book)"
+              >
+                Add To Favourites
+              </button>
+              <p
+                v-if="checkexistence(book)"
+                style="
+                  background-color: rgb(172, 151, 190);
+                  display: block;
+                  width: 100%;
+                "
+              >
+                this Book is in your Favourites
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- 
+      favourites
+     -->
+
+        <div v-show="isBooksVisible==false" class="row">
+          <div id="noBooks" v-if="favourites.length == 0">
+            You don' t have any books in your favourites
+          </div>
+
+          <!-- table to show favourites -->
+
+          <table v-if="favourites.length >= 1" class="table">
+            <thead>
+              <th>ISBN</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Author</th>
+              <th>Pages</th>
+              <th>Remove</th>
+              <th>Price</th>
+            </thead>
+            <tbody>
+              <tr v-for="book in favourites">
+                <td>{{book.ISBN}}</td>
+                <td>{{book.name}}</td>
+                <td>{{book.category}}</td>
+                <td>{{book.author}}</td>
+                <td>{{book.pages}}</td>
+                <td>
+                  <button class="btn-danger" @click="removebook(book)">
+                    Remove
+                  </button>
+                </td>
+                <td>{{currencyFormatter(book.price)}}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4" class="text-center fw-bolder">Total Price:</th>
+                <th colspan="3" class="text-center fw-bolder">
+                  {{currencyFormatter(getTotalPrice())}}
+                </th>
+              </tr>
+              <tr>
+                <th colspan="4" class="text-center fw-bolder">Taxes:</th>
+                <th colspan="3" class="text-center fw-bolder">
+                  {{currencyFormatter(getTotalPrice()* 0.1) }}
+                </th>
+              </tr>
+              <tr>
+                <th colspan="4" class="text-center fw-bolder">Grand Total:</th>
+                <th colspan="3" class="text-center fw-bolder">
+                  {{currencyFormatter(getTotalPrice()* 0.1 + getTotalPrice())}}
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="./Books.js"></script>
+
+    <script>
+      Vue.createApp({
+        data() {
+          return {
+            books: bookes,
+            favourites: [],
+            isBooksVisible: true,
+          };
+        },
+        methods: {
+          addBook(book) {
+            this.favourites.push(book);
+          },
+          checkexistence(book) {
+            for (let i = 0; i < this.favourites.length; i++) {
+              if (book.ISBN == this.favourites[i].ISBN) {
+                return true;
+              }
+            }
+            return false;
+          },
+          removebook(book) {
+            let boook;
+            for (let i = 0; i < this.favourites.length; i++) {
+              if (book.ISBN == this.favourites[i].ISBN) {
+                boook = i;
+              }
+            }
+            this.favourites.splice(boook, 1);
+          },
+          currencyFormatter(value) {
+            let formatter = Intl.NumberFormat("ar-SA", {
+              style: "currency",
+              currency: "SAR",
+              minimumFractionDigits: 0,
+            });
+            return formatter.format(value);
+          },
+          getTotalPrice() {
+            let result = 0;
+            for (let i = 0; i < this.favourites.length; i++) {
+              result += this.favourites[i].price;
+            }
+            return result;
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
