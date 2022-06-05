@@ -62,7 +62,7 @@
               <button
                 class="btn"
                 v-if="!checkexistence(book)"
-                @click="addBook(book)"
+                @click="addBook =  book "
               >
                 Add To Favourites
               </button>
@@ -108,7 +108,7 @@
                 <td>{{book.author}}</td>
                 <td>{{book.pages}}</td>
                 <td>
-                  <button class="btn-danger" @click="removebook(book)">
+                  <button class="btn-danger" @click="removebook = book ">
                     Remove
                   </button>
                 </td>
@@ -119,19 +119,19 @@
               <tr>
                 <th colspan="4" class="text-center fw-bolder">Total Price:</th>
                 <th colspan="3" class="text-center fw-bolder">
-                  {{currencyFormatter(getTotalPrice())}}
+                  {{currencyFormatter(getTotalPrice)}}
                 </th>
               </tr>
               <tr>
                 <th colspan="4" class="text-center fw-bolder">Taxes:</th>
                 <th colspan="3" class="text-center fw-bolder">
-                  {{currencyFormatter(getTotalPrice()* 0.1) }}
+                  {{currencyFormatter(getTotalPrice* 0.1) }}
                 </th>
               </tr>
               <tr>
                 <th colspan="4" class="text-center fw-bolder">Grand Total:</th>
                 <th colspan="3" class="text-center fw-bolder">
-                  {{currencyFormatter(getTotalPrice()* 0.1 + getTotalPrice())}}
+                  {{currencyFormatter(getTotalPrice* 0.1 + getTotalPrice)}}
                 </th>
               </tr>
             </tfoot>
@@ -152,9 +152,9 @@
           };
         },
         methods: {
-          addBook(book) {
-            this.favourites.push(book);
-          },
+          // addBook(book) {
+          //   this.favourites.push(book);
+          // },
           checkexistence(book) {
             for (let i = 0; i < this.favourites.length; i++) {
               if (book.ISBN == this.favourites[i].ISBN) {
@@ -163,15 +163,15 @@
             }
             return false;
           },
-          removebook(book) {
-            let boook;
-            for (let i = 0; i < this.favourites.length; i++) {
-              if (book.ISBN == this.favourites[i].ISBN) {
-                boook = i;
-              }
-            }
-            this.favourites.splice(boook, 1);
-          },
+          // removebook(book) {
+          //   let boook;
+          //   for (let i = 0; i < this.favourites.length; i++) {
+          //     if (book.ISBN == this.favourites[i].ISBN) {
+          //       boook = i;
+          //     }
+          //   }
+          //   this.favourites.splice(boook, 1);
+          // },
           currencyFormatter(value) {
             let formatter = Intl.NumberFormat("ar-SA", {
               style: "currency",
@@ -179,6 +179,33 @@
               minimumFractionDigits: 0,
             });
             return formatter.format(value);
+          },
+          //   getTotalPrice() {
+          //     let result = 0;
+          //     for (let i = 0; i < this.favourites.length; i++) {
+          //       result += this.favourites[i].price;
+          //     }
+          //     return result;
+          //   },
+        },
+        computed: {
+          addBook: {
+            set(book) {
+              this.favourites.push(book);
+            },
+            get() {},
+          },
+          removebook: {
+            set(book) {
+              let boook;
+              for (let i = 0; i < this.favourites.length; i++) {
+                if (book.ISBN == this.favourites[i].ISBN) {
+                  boook = i;
+                }
+              }
+              this.favourites.splice(boook, 1);
+            },
+            get() {},
           },
           getTotalPrice() {
             let result = 0;
